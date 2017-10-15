@@ -8,7 +8,7 @@ namespace TestsViaFunction
     public static class ExecuteTests
     {
         [FunctionName("ExecuteTests")]
-        public static void Run([QueueTrigger("myqueue-items", Connection = "")]TestTypeInfo myQueueItem, ICollector<TestResult> outputTable, TraceWriter log)
+        public static void Run([QueueTrigger("queue-with-tests", Connection = "storage_Conn")]TestTypeInfo myQueueItem, [Table(tableName: "TestResults", Connection = "storage_Conn")] ICollector<TestResult> outputTable, TraceWriter log)
         {
             ManualResetEvent executionManualResetEvent = new ManualResetEvent(false);
             var resultProxy = new ResultProxy(outputTable, myQueueItem);

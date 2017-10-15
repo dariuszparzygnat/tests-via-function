@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -16,7 +17,7 @@ namespace TestsViaFunction
     public static class RetrieveTypes
     {
         [FunctionName("RetrieveTypes")]
-        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, ICollector<TestTypeInfo> outputQueueItem, TraceWriter log)
+        public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, [Queue("queue-with-tests", Connection = "storage_Conn")] ICollector<TestTypeInfo> outputQueueItem, TraceWriter log)
         {
             string fileName = GetHeader(req, "fileName");
             Guid executiondIdentifier = Guid.NewGuid();
@@ -25,7 +26,8 @@ namespace TestsViaFunction
             {
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a tests dll");
             }
-            var testAssemblyPath = Path.Combine(@"D:\home\site\projectdlls", fileName);
+            var dllLocation = ConfigurationManager.AppSettings["dllLocation"];
+            var testAssemblyPath = Path.Combine(dllLocation, fileName);
             var loadedAssembly = Assembly.LoadFile(testAssemblyPath);
             var testTypes = GetLoadableTypes(loadedAssembly).Where(type => type.IsClass && type.Name.Contains("Test")).Select(e => new TestTypeInfo() { DllPath = testAssemblyPath, TypeName = e.FullName, Guid = executiondIdentifier }).ToList();
 
