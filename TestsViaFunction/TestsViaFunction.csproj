@@ -5,6 +5,7 @@
   <ItemGroup>    
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.6" />    
     <PackageReference Include="WindowsAzure.Storage" Version="8.5.0" />    
+    <PackageReference Include="xunit.abstractions" Version="2.0.1" />    
     <PackageReference Include="xunit.runner.utility" Version="2.3.0" />
   </ItemGroup>
   <ItemGroup>
