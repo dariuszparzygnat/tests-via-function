@@ -21,11 +21,6 @@ namespace TestsViaFunction
         {
             string fileName = GetHeader(req, "fileName");
             Guid executiondIdentifier = Guid.NewGuid();
-
-            if (!fileName.Contains(".dll") || !fileName.Contains("Test"))
-            {
-                return req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a tests dll");
-            }
             var dllLocation = ConfigurationManager.AppSettings["dllLocation"];
             var testAssemblyPath = Path.Combine(dllLocation, fileName);
             var loadedAssembly = Assembly.LoadFile(testAssemblyPath);
