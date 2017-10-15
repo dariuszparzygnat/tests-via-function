@@ -1,7 +1,8 @@
+using System.IO;
+using Xunit.Runners;
+using System.Threading;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
-using System.Threading;
-using Xunit.Runners;
 
 namespace TestsViaFunction
 {
@@ -12,7 +13,11 @@ namespace TestsViaFunction
         {
             ManualResetEvent executionManualResetEvent = new ManualResetEvent(false);
             var resultProxy = new ResultProxy(outputTable, myQueueItem);
+            var fileExists = File.Exists(myQueueItem.DllPath);
+            log.Info(fileExists.ToString());
+            log.Info(myQueueItem.DllPath);
             var runner = AssemblyRunner.WithAppDomain(myQueueItem.DllPath);
+            log.Info("Runner created");
             runner.OnTestFailed += resultProxy.OnTestFailed;
             runner.OnTestPassed += resultProxy.OnTestPassed;
             runner.OnTestSkipped += resultProxy.OnTestSkipped;
