@@ -6,13 +6,11 @@ namespace TestsViaFunction
     public class ResultProxy
     {
         private readonly ICollector<TestResult> _collector;
-        private readonly TestTypeInfo _testTypeInfo;
         private readonly string _partitionKey;
 
         public ResultProxy(ICollector<TestResult> storageTable, TestTypeInfo testTypeInfo)
         {
             _collector = storageTable;
-            _testTypeInfo = testTypeInfo;
             _partitionKey = testTypeInfo.Guid.ToString();
         }
 
