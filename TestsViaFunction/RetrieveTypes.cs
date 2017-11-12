@@ -21,7 +21,7 @@ namespace TestsViaFunction
         {
             string fileName = GetHeader(req, "fileName");
             Guid executiondIdentifier = Guid.NewGuid();
-            var dllLocation = ConfigurationManager.AppSettings["dllLocation"];
+            var dllLocation = ConfigurationManager.AppSettings["testDllDirectory"];
             var testAssemblyPath = Path.Combine(dllLocation, fileName);
             var loadedAssembly = Assembly.LoadFile(testAssemblyPath);
             var testTypes = GetLoadableTypes(loadedAssembly).Where(type => type.IsClass && type.Name.Contains("Test")).Select(e => new TestTypeInfo() { DllPath = testAssemblyPath, TypeName = e.FullName, Guid = executiondIdentifier }).ToList();
