@@ -20,6 +20,8 @@ namespace TestsViaFunction
         public static async Task<HttpResponseMessage> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)]HttpRequestMessage req, [Queue("queue-with-tests", Connection = "storage_Conn")] ICollector<TestTypeInfo> outputQueueItem, TraceWriter log)
         {
             string fileName = GetHeader(req, "fileName");
+            if (string.IsNullOrWhiteSpace(fileName))
+                return req.CreateResponse(HttpStatusCode.BadRequest, "Key 'fileName' not exists in header or is broken.");
             Guid executiondIdentifier = Guid.NewGuid();
             var dllLocation = ConfigurationManager.AppSettings["testDllDirectory"];
             var testAssemblyPath = Path.Combine(dllLocation, fileName);
@@ -27,9 +29,8 @@ namespace TestsViaFunction
             var testTypes = GetLoadableTypes(loadedAssembly).Where(type => type.IsClass && type.Name.Contains("Test")).Select(e => new TestTypeInfo() { DllPath = testAssemblyPath, TypeName = e.FullName, Guid = executiondIdentifier }).ToList();
 
             if (!testTypes.Any())
-            {
                 return req.CreateResponse(HttpStatusCode.BadRequest, "Assembly has no test types");
-            }
+            
             testTypes.ForEach(e => outputQueueItem.Add(e));
             return req.CreateResponse(HttpStatusCode.OK, testTypes);
         }
